@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>GloSafe — Glow-in-the-dark Arm Cuff</title>
+  <style>
+    :root{
+      --bg:#000;
+      --green:#18ff6b;
+      --muted:#0b0b0b;
+      --glass: rgba(255,255,255,0.03);
+      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#000 0%, #050505 60%);color:#dfeee0}
+    .container{max-width:1100px;margin:32px auto;padding:24px}
+
+    header{display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo-wrap{display:flex;align-items:center;gap:8px}
+    .bulb{
+      width:56px;height:56px;border-radius:50%;background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.35), rgba(255,255,255,0.02));display:flex;align-items:center;justify-content:center;box-shadow:0 0 18px rgba(24,255,107,0.25), inset 0 -6px 18px rgba(0,0,0,0.6)
+    }
+    .bulb svg{filter:drop-shadow(0 0 8px rgba(24,255,107,0.8));}
+    h1{font-size:34px;margin:0;color:var(--green);text-shadow:0 0 12px rgba(24,255,107,0.12);letter-spacing:1px}
+    .tag{font-size:12px;color:#7ef0a4}
+
+    nav{display:flex;gap:12px}
+    .nav-btn{background:transparent;border:1px solid rgba(24,255,107,0.12);padding:8px 12px;border-radius:10px;color:var(--green);cursor:pointer}
+
+    main{display:grid;grid-template-columns:1fr 420px;gap:28px;margin-top:22px}
+
+    /* left: hero / image */
+    .hero{background:linear-gradient(180deg, rgba(24,255,107,0.02), transparent);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .image-card{background:var(--muted);height:560px;border-radius:12px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+    .click-hint{position:absolute;bottom:14px;left:14px;background:rgba(0,0,0,0.6);padding:8px 10px;border-radius:8px;font-size:13px}
+
+    /* product panel */
+    .panel{background:rgba(0,0,0,0.55);padding:18px;border-radius:12px;border:1px solid rgba(24,255,107,0.06)}
+    .price{font-size:28px;color:var(--green);margin:0}
+    label{display:block;margin-top:12px;font-size:14px}
+    select,input[type=text]{width:100%;padding:10px;margin-top:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:inherit}
+    .options{display:flex;gap:8px;margin-top:8px}
+    .option{flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);cursor:pointer;text-align:center}
+    .option.selected{box-shadow:0 6px 18px rgba(24,255,107,0.06);border-color:rgba(24,255,107,0.18);background:linear-gradient(180deg, rgba(24,255,107,0.02), transparent)}
+
+    button.primary{margin-top:14px;background:linear-gradient(180deg,var(--green),#05b84a);border:none;padding:12px 16px;border-radius:12px;color:#001000;font-weight:700;cursor:pointer;box-shadow:0 6px 24px rgba(24,255,107,0.12)}
+
+    footer{margin-top:28px;color:#9fbf99;font-size:13px}
+
+    /* sections */
+    .sections{margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
+    .ad video{width:100%;border-radius:8px}
+
+    /* modal/checkout */
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:50}
+    .modal .box{width:420px;background:#061006;padding:18px;border-radius:12px;border:1px solid rgba(24,255,107,0.06)}
+    .field{margin-top:10px}
+    .note{font-size:13px;color:#bdefc6}
+
+    /* small screens */
+    @media(max-width:880px){main{grid-template-columns:1fr;}
+      .image-card{height:380px}
+    }
+
+    /* small glow animation for the brand text */
+    @keyframes glow {
+      0% {text-shadow:0 0 8px rgba(24,255,107,0.35)}
+      50% {text-shadow:0 0 22px rgba(24,255,107,0.55)}
+      100% {text-shadow:0 0 8px rgba(24,255,107,0.35)}
+    }
+    .glow{animation:glow 2.2s infinite}
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo-wrap">
+          <div class="bulb" aria-hidden>
+            <!-- simple glowing lightbulb SVG -->
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 18h6v-1a3 3 0 0 0-6 0v1z" stroke="black" stroke-width="0"/>
+              <g fill="white" opacity="0.95">
+                <path d="M12 2C8.686 2 6 4.686 6 8c0 2.2 1.2 3.9 2 5.1V15a3 3 0 0 0 6 0v-1.9c.8-1.2 2-2.9 2-5.1 0-3.314-2.686-6-6-6z"/>
+              </g>
+            </svg>
+          </div>
+          <div>
+            <h1 class="glow">GloSafe</h1>
+            <div class="tag">Glow-in-the-dark safety accessories</div>
+          </div>
+        </div>
+      </div>
+      <nav>
+        <button class="nav-btn" id="viewHome">Home</button>
+        <button class="nav-btn" id="viewProduct">Product</button>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="image-card" id="heroImage" role="button" tabindex="0" title="Click to view product">
+          <!-- Inline illustrative SVG: arm + cuff -->
+          <svg id="armSvg" width="760" height="520" viewBox="0 0 760 520" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto">
+            <defs>
+              <linearGradient id="skin" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stop-color="#f0d3b8" stop-opacity="1"/>
+                <stop offset="100%" stop-color="#d3b19a" stop-opacity="1"/>
+              </linearGradient>
+              <filter id="glowFilter" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="8" result="coloredBlur" />
+                <feMerge>
+                  <feMergeNode in="coloredBlur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+            <!-- simple arm silhouette -->
+            <path d="M120 360 C140 260, 300 220, 580 210 C690 205, 740 170, 700 120 C660 70, 540 70, 420 90 C300 110, 200 160, 140 240 C100 300,88 340,120 360 Z" fill="url(#skin)" stroke="#b88f75" stroke-opacity="0.4"/>
+
+            <!-- cuff (circle around bicep) -->
+            <g id="cuffGroup">
+              <ellipse id="cuff" cx="320" cy="240" rx="120" ry="42" fill="rgba(10,10,10,0.6)"/>
+              <ellipse id="cuffGlow" cx="320" cy="240" rx="130" ry="52" fill="none" stroke="rgba(24,255,107,0.85)" stroke-width="10" filter="url(#glowFilter)" opacity="0.7"/>
+              <ellipse id="cuffInner" cx="320" cy="240" rx="110" ry="36" fill="rgba(255,255,255,0.02)"/>
+            </g>
+
+            <!-- shadow -->
+            <ellipse cx="360" cy="370" rx="210" ry="20" fill="#000" opacity="0.25"/>
+          </svg>
+
+          <div class="click-hint">Click image to view product</div>
+        </div>
+      </section>
+
+      <aside class="panel" id="productPanel">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+          <div>
+            <div style="font-size:13px;color:#96f1a9">Price</div>
+            <div class="price">$15 - $20</div>
+          </div>
+        </div>
+
+        <label for="color">Color (glow)</label>
+        <div class="options" id="colorOpts">
+          <div class="option selected" data-value="green">Green</div>
+          <div class="option" data-value="yellow">Yellow</div>
+          <div class="option" data-value="pink">Pink</div>
+        </div>
+
+        <label for="size">Diameter</label>
+        <div class="options" id="sizeOpts">
+          <div class="option selected" data-value="3">3 inches</div>
+          <div class="option" data-value="5">5 inches</div>
+          <div class="option" data-value="7">7 inches</div>
+        </div>
+
+        <label for="embroidery">Embroidery (max 20 letters)</label>
+        <input type="text" id="embroidery" maxlength="20" placeholder="Enter up to 20 letters"/>
+        <div class="note">Embroidery will be produced as black sticker-like letters cut on a Cricut machine.</div>
+
+        <button class="primary" id="placeOrder">Place Order</button>
+
+        <div class="sections">
+          <div class="card">
+            <h3>Materials</h3>
+            <p>Our GloSafe arm cuffs are made from durable glow-in-the-dark TPU material. TPU provides flexibility, strength, and long-lasting glow performance, ensuring the band stays lightweight and comfortable while offering high visibility in dark environments. The embroidery option will be black stickers we make on a Cricut machine.</p>
+          </div>
+
+          <div class="card">
+            <h3>The Cuff's Purpose</h3>
+            <p>Our glow-in-the-dark arm bands are designed to ensure safety for humans while performing daily tasks where darkness increases the risk of injury. These stylish bands are fully customizable in color, size, shape, and embroidery to guarantee maximum satisfaction for each customer. GloSafe's inventory arm cuffs are ideal for anyone concerned with home and nighttime safety, such as parents and guardians, as well as those needing visibility while exercising—like athletes and trainers—when light is limited.</p>
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <h4 style="margin:0 0 8px 0">Ad</h4>
+          <div class="ad card">
+            <!-- placeholder video; replace assets/ad.mp4 with your file in the repo -->
+            <video id="adVideo" controls playsinline>
+              <source src="assets/ad.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        </div>
+
+      </aside>
+    </main>
+
+    <footer>
+      <div>© GloSafe — Designed for visibility. Theme: black &amp; green.</div>
+    </footer>
+  </div>
+
+  <!-- Checkout modal (hidden until Place Order) -->
+  <div id="checkoutModal" class="modal" style="display:none">
+    <div class="box">
+      <h3>Checkout</h3>
+      <p id="checkoutTotal" style="font-weight:700;color:var(--green)"></p>
+
+      <div class="field">
+        <label>First name</label>
+        <input type="text" id="firstName" required />
+      </div>
+      <div class="field">
+        <label>Last name</label>
+        <input type="text" id="lastName" required />
+      </div>
+      <div class="field">
+        <label>Email address</label>
+        <input type="text" id="email" required placeholder="you@example.com" />
+      </div>
+      <div class="field">
+        <label>Address</label>
+        <input type="text" id="address" required placeholder="Street address, apt, etc." />
+      </div>
+      <div class="field">
+        <label>Country</label>
+        <select id="country">
+          <option value="US">United States</option>
+          <option value="UK">United Kingdom</option>
+          <option value="CA">Canada</option>
+        </select>
+      </div>
+
+      <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
+        <button id="cancelCheckout" class="nav-btn">Cancel</button>
+        <button id="confirmCheckout" class="primary">Confirm Order</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirmation modal -->
+  <div id="confirmModal" class="modal" style="display:none">
+    <div class="box">
+      <h3>Order Received</h3>
+      <p id="confirmMessage" style="font-weight:700;color:var(--green)"></p>
+      <p style="margin-top:12px">Thank you — we'll email order details to the address you provided.</p>
+      <div style="display:flex;justify-content:flex-end;margin-top:12px">
+        <button id="closeConfirm" class="primary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // UI wiring
+    const colorOpts = document.getElementById('colorOpts');
+    const sizeOpts = document.getElementById('sizeOpts');
+    const embroideryInput = document.getElementById('embroidery');
+    const placeOrderBtn = document.getElementById('placeOrder');
+    const heroImage = document.getElementById('heroImage');
+
+    function selectOption(container, el){
+      [...container.children].forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    colorOpts.addEventListener('click', e => {
+      const btn = e.target.closest('.option'); if(!btn) return; selectOption(colorOpts, btn); updateCuffColor();
+    });
+    sizeOpts.addEventListener('click', e => {const btn = e.target.closest('.option'); if(!btn) return; selectOption(sizeOpts, btn); updateCuffSize();});
+
+    // Update SVG cuff's glow color and size
+    function updateCuffColor(){
+      const selected = colorOpts.querySelector('.selected').dataset.value;
+      const glow = document.getElementById('cuffGlow');
+      if(selected==='green') glow.setAttribute('stroke','rgba(24,255,107,0.85)');
+      else if(selected==='yellow') glow.setAttribute('stroke','rgba(255,230,80,0.95)');
+      else glow.setAttribute('stroke','rgba(255,120,190,0.9)');
+    }
+    function updateCuffSize(){
+      const v = sizeOpts.querySelector('.selected').dataset.value;
+      const rx = v==='3' ? 90 : v==='5' ? 120 : 150;
+      const ry = v==='3' ? 30 : v==='5' ? 42 : 56;
+      document.getElementById('cuff').setAttribute('rx', rx);
+      document.getElementById('cuff').setAttribute('ry', ry);
+      document.getElementById('cuffGlow').setAttribute('rx', rx+10);
+      document.getElementById('cuffGlow').setAttribute('ry', ry+10);
+      document.getElementById('cuffInner').setAttribute('rx', rx-10);
+      document.getElementById('cuffInner').setAttribute('ry', ry-6);
+    }
+
+    // initial render
+    updateCuffColor(); updateCuffSize();
+
+    // navigate between home (hero only) and product (panel in view)
+    document.getElementById('viewHome').addEventListener('click', ()=>{window.scrollTo({top:0,behavior:'smooth'});});
+    document.getElementById('viewProduct').addEventListener('click', ()=>{document.getElementById('productPanel').scrollIntoView({behavior:'smooth'});});
+    heroImage.addEventListener('click', ()=>{document.getElementById('productPanel').scrollIntoView({behavior:'smooth'});});
+
+    // Place Order -> open checkout modal
+    placeOrderBtn.addEventListener('click', ()=>{
+      // compute if embroidery selected
+      const embroidery = embroideryInput.value.trim();
+      const hasEmbroidery = embroidery.length>0;
+      const total = hasEmbroidery ? 20 : 15;
+      document.getElementById('checkoutTotal').textContent = 'Your total today will be $' + total;
+      // show modal
+      document.getElementById('checkoutModal').style.display = 'flex';
+    });
+
+    document.getElementById('cancelCheckout').addEventListener('click', ()=>{document.getElementById('checkoutModal').style.display='none';});
+
+    // Confirm order -> validate fields and show final confirmation
+    document.getElementById('confirmCheckout').addEventListener('click', ()=>{
+      const first = document.getElementById('firstName').value.trim();
+      const last = document.getElementById('lastName').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const address = document.getElementById('address').value.trim();
+      if(!first||!last||!email||!address){alert('Please fill all required fields.');return;}
+      // compute final total and message based on embroidery
+      const embroidery = embroideryInput.value.trim();
+      const hasEmbroidery = embroidery.length>0;
+      const total = hasEmbroidery ? 20 : 15;
+      document.getElementById('checkoutModal').style.display='none';
+      document.getElementById('confirmMessage').textContent = (hasEmbroidery? 'Your total will be $20' : 'Your total will be $15');
+      document.getElementById('confirmModal').style.display='flex';
+    });
+    document.getElementById('closeConfirm').addEventListener('click', ()=>{document.getElementById('confirmModal').style.display='none';});
+
+    // small accessibility: close modals with ESC
+    document.addEventListener('keydown', e=>{if(e.key==='Escape'){document.getElementById('checkoutModal').style.display='none';document.getElementById('confirmModal').style.display='none';}});
+
+    // limit embroidery to letters and spaces (up to 20) — allow basic input but warn on invalid
+    embroideryInput.addEventListener('input', ()=>{
+      // remove characters not letters or spaces
+      const cleaned = embroideryInput.value.replace(/[^A-Za-z\s]/g,'');
+      if(cleaned!==embroideryInput.value) embroideryInput.value = cleaned;
+    });
+
+  </script>
+</body>
+</html>
