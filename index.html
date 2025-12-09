@@ -64,7 +64,6 @@
       .image-card{height:380px}
     }
 
-    /* small glow animation for the brand text */
     @keyframes glow {
       0% {text-shadow:0 0 8px rgba(24,255,107,0.35)}
       50% {text-shadow:0 0 22px rgba(24,255,107,0.55)}
@@ -80,7 +79,6 @@
       <div class="brand">
         <div class="logo-wrap">
           <div class="bulb" aria-hidden>
-            <!-- simple glowing lightbulb SVG -->
             <svg width="34" height="34" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M9 18h6v-1a3 3 0 0 0-6 0v1z" stroke="black" stroke-width="0"/>
               <g fill="white" opacity="0.95">
@@ -103,32 +101,26 @@
     <main>
       <section class="hero">
         <div class="image-card" id="heroImage" role="button" tabindex="0" title="Click to view product">
-          <!-- Inline illustrative SVG: arm + cuff -->
           <svg id="armSvg" width="760" height="520" viewBox="0 0 760 520" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto">
             <defs>
               <linearGradient id="skin" x1="0" x2="0" y1="0" y2="1">
-                <stop offset="0%" stop-color="#f0d3b8" stop-opacity="1"/>
-                <stop offset="100%" stop-color="#d3b19a" stop-opacity="1"/>
+                <stop offset="0%" stop-color="#f0d3b8"/>
+                <stop offset="100%" stop-color="#d3b19a"/>
               </linearGradient>
               <filter id="glowFilter" x="-50%" y="-50%" width="200%" height="200%">
                 <feGaussianBlur stdDeviation="8" result="coloredBlur" />
-                <feMerge>
-                  <feMergeNode in="coloredBlur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
+                <feMerge><feMergeNode in="coloredBlur" /><feMergeNode in="SourceGraphic" /></feMerge>
               </filter>
             </defs>
-            <!-- simple arm silhouette -->
+
             <path d="M120 360 C140 260, 300 220, 580 210 C690 205, 740 170, 700 120 C660 70, 540 70, 420 90 C300 110, 200 160, 140 240 C100 300,88 340,120 360 Z" fill="url(#skin)" stroke="#b88f75" stroke-opacity="0.4"/>
 
-            <!-- cuff (circle around bicep) -->
             <g id="cuffGroup">
               <ellipse id="cuff" cx="320" cy="240" rx="120" ry="42" fill="rgba(10,10,10,0.6)"/>
               <ellipse id="cuffGlow" cx="320" cy="240" rx="130" ry="52" fill="none" stroke="rgba(24,255,107,0.85)" stroke-width="10" filter="url(#glowFilter)" opacity="0.7"/>
               <ellipse id="cuffInner" cx="320" cy="240" rx="110" ry="36" fill="rgba(255,255,255,0.02)"/>
             </g>
 
-            <!-- shadow -->
             <ellipse cx="360" cy="370" rx="210" ry="20" fill="#000" opacity="0.25"/>
           </svg>
 
@@ -179,9 +171,8 @@
         <div style="margin-top:12px">
           <h4 style="margin:0 0 8px 0">Ad</h4>
           <div class="ad card">
-            <!-- placeholder video; replace assets/ad.mp4 with your file in the repo -->
             <video id="adVideo" controls playsinline>
-              <source src="assets/ad.mp4" type="video/mp4" />
+              <source src="Ad.mov" type="video/quicktime" />
               Your browser does not support the video tag.
             </video>
           </div>
@@ -195,7 +186,7 @@
     </footer>
   </div>
 
-  <!-- Checkout modal (hidden until Place Order) -->
+  <!-- Checkout modal -->
   <div id="checkoutModal" class="modal" style="display:none">
     <div class="box">
       <h3>Checkout</h3>
@@ -261,9 +252,10 @@
     colorOpts.addEventListener('click', e => {
       const btn = e.target.closest('.option'); if(!btn) return; selectOption(colorOpts, btn); updateCuffColor();
     });
-    sizeOpts.addEventListener('click', e => {const btn = e.target.closest('.option'); if(!btn) return; selectOption(sizeOpts, btn); updateCuffSize();});
+    sizeOpts.addEventListener('click', e => {
+      const btn = e.target.closest('.option'); if(!btn) return; selectOption(sizeOpts, btn); updateCuffSize();
+    });
 
-    // Update SVG cuff's glow color and size
     function updateCuffColor(){
       const selected = colorOpts.querySelector('.selected').dataset.value;
       const glow = document.getElementById('cuffGlow');
@@ -271,6 +263,7 @@
       else if(selected==='yellow') glow.setAttribute('stroke','rgba(255,230,80,0.95)');
       else glow.setAttribute('stroke','rgba(255,120,190,0.9)');
     }
+
     function updateCuffSize(){
       const v = sizeOpts.querySelector('.selected').dataset.value;
       const rx = v==='3' ? 90 : v==='5' ? 120 : 150;
@@ -283,50 +276,57 @@
       document.getElementById('cuffInner').setAttribute('ry', ry-6);
     }
 
-    // initial render
-    updateCuffColor(); updateCuffSize();
+    updateCuffColor();
+    updateCuffSize();
 
-    // navigate between home (hero only) and product (panel in view)
     document.getElementById('viewHome').addEventListener('click', ()=>{window.scrollTo({top:0,behavior:'smooth'});});
     document.getElementById('viewProduct').addEventListener('click', ()=>{document.getElementById('productPanel').scrollIntoView({behavior:'smooth'});});
     heroImage.addEventListener('click', ()=>{document.getElementById('productPanel').scrollIntoView({behavior:'smooth'});});
 
-    // Place Order -> open checkout modal
     placeOrderBtn.addEventListener('click', ()=>{
-      // compute if embroidery selected
       const embroidery = embroideryInput.value.trim();
       const hasEmbroidery = embroidery.length>0;
       const total = hasEmbroidery ? 20 : 15;
       document.getElementById('checkoutTotal').textContent = 'Your total today will be $' + total;
-      // show modal
       document.getElementById('checkoutModal').style.display = 'flex';
     });
 
-    document.getElementById('cancelCheckout').addEventListener('click', ()=>{document.getElementById('checkoutModal').style.display='none';});
+    document.getElementById('cancelCheckout').addEventListener('click', ()=>{
+      document.getElementById('checkoutModal').style.display='none';
+    });
 
-    // Confirm order -> validate fields and show final confirmation
     document.getElementById('confirmCheckout').addEventListener('click', ()=>{
       const first = document.getElementById('firstName').value.trim();
       const last = document.getElementById('lastName').value.trim();
       const email = document.getElementById('email').value.trim();
       const address = document.getElementById('address').value.trim();
-      if(!first||!last||!email||!address){alert('Please fill all required fields.');return;}
-      // compute final total and message based on embroidery
+
+      if(!first||!last||!email||!address){
+        alert('Please fill all required fields.');
+        return;
+      }
+
       const embroidery = embroideryInput.value.trim();
       const hasEmbroidery = embroidery.length>0;
       const total = hasEmbroidery ? 20 : 15;
+
       document.getElementById('checkoutModal').style.display='none';
-      document.getElementById('confirmMessage').textContent = (hasEmbroidery? 'Your total will be $20' : 'Your total will be $15');
+      document.getElementById('confirmMessage').textContent = hasEmbroidery ? 'Your total will be $20' : 'Your total will be $15';
       document.getElementById('confirmModal').style.display='flex';
     });
-    document.getElementById('closeConfirm').addEventListener('click', ()=>{document.getElementById('confirmModal').style.display='none';});
 
-    // small accessibility: close modals with ESC
-    document.addEventListener('keydown', e=>{if(e.key==='Escape'){document.getElementById('checkoutModal').style.display='none';document.getElementById('confirmModal').style.display='none';}});
+    document.getElementById('closeConfirm').addEventListener('click', ()=>{
+      document.getElementById('confirmModal').style.display='none';
+    });
 
-    // limit embroidery to letters and spaces (up to 20) — allow basic input but warn on invalid
+    document.addEventListener('keydown', e=>{
+      if(e.key==='Escape'){
+        document.getElementById('checkoutModal').style.display='none';
+        document.getElementById('confirmModal').style.display='none';
+      }
+    });
+
     embroideryInput.addEventListener('input', ()=>{
-      // remove characters not letters or spaces
       const cleaned = embroideryInput.value.replace(/[^A-Za-z\s]/g,'');
       if(cleaned!==embroideryInput.value) embroideryInput.value = cleaned;
     });
@@ -334,3 +334,4 @@
   </script>
 </body>
 </html>
+
